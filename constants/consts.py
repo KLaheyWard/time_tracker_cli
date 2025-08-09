@@ -1,0 +1,6 @@
+# cycles
+NUM_DAYS_IN_CYCLE = 9
+NUM_HOURS_IN_CYCLE = 75
+
+# breaks
+UNPAID_BREAK_MIN = 30
