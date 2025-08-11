@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 
 class StoreAbs(ABC):
-
     @abstractmethod
     def add_entry(self, *args, **kwargs) -> None:
         """Prepares an entry for it to be saved somewhere."""

@@ -1,10 +1,9 @@
-from typing import Type, TypeVar
+from typing import Type
 from models.abstract.entry_abs import EntryAbs
 from models.abstract.storage_abs import StorageAbs
 from models.file_handler import FileHandler
 from models.model_to_string_factory import ModelToStringFactory
 from models.string_to_model_factory import StringToModelFactory
-from models.time_entry import TimeEntry
 
 
 class FileStorage(StorageAbs):
