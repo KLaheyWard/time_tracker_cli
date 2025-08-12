@@ -1,5 +1,5 @@
 from enum import Enum
 
 class DayTypeEnum(Enum):
-    REGULAR = 'regular',
+    REGULAR = 'regular'
     HOLIDAY = 'holiday'

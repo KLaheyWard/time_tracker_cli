@@ -6,9 +6,12 @@ from enums.day_type import DayTypeEnum
 
 class TimeEntry(EntryAbs):
     """The data for a single day's time entry."""
-    def __init__(self, id:int, cycle_id: int, start_time: str, end_time: str=None, note: str = '', day_type: DayTypeEnum=DayTypeEnum.REGULAR, unpaid_break_min:str=UNPAID_BREAK_MIN):
+    def __init__(self, id:int, cycle_id: int, start_time: str | datetime, end_time: str=None, note: str = '', day_type: DayTypeEnum=DayTypeEnum.REGULAR, unpaid_break_min:str=UNPAID_BREAK_MIN):
         try:
-            self.start_time : datetime = smart_parse_datetime(start_time)
+            if isinstance(start_time, str):
+                self.start_time : datetime = smart_parse_datetime(start_time)
+            else: 
+                self.start_time = start_time
             if end_time:
                 self.end_time : datetime = smart_parse_datetime(end_time)
             else: 

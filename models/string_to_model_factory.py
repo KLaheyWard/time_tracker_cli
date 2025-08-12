@@ -6,6 +6,7 @@ import io
 T = TypeVar("T")
 Converter = Callable[[str], Any]
 
+
 class StringToModelFactory(Generic[T]):
     """
     Convert a delimited string into an instance of a given model class.

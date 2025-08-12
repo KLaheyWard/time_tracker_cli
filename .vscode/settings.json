@@ -1,0 +1,16 @@
+{
+    
+        // Use Pylance for IntelliSense
+        "python.languageServer": "Pylance",
+    
+        // Force Pylance to always flag missing imports/modules
+        "python.analysis.diagnosticSeverityOverrides": {
+            "reportMissingImports": "error",
+            "reportMissingModuleSource": "error"
+        },
+    
+        // Keep auto-import suggestions enabled
+        "python.analysis.autoImportCompletions": true
+    
+    
+}

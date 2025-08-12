@@ -1,6 +1,7 @@
 from __future__ import annotations
 from datetime import datetime, date
 
+
 def smart_parse_datetime(s: str) -> datetime:
     """
     Parse a date/time string into a datetime using only the Python standard library.
@@ -75,15 +76,18 @@ def smart_parse_datetime(s: str) -> datetime:
         if ampm:
             # Convert 12-hour to 24-hour
             if ampm == "am":
-                if h == 12: h = 0
+                if h == 12:
+                    h = 0
             else:  # pm
-                if h < 12: h += 12
+                if h < 12:
+                    h += 12
         try:
             return datetime.combine(today, datetime.strptime(f"{h:02d}:{m:02d}", "%H:%M").time())
         except ValueError:
             pass
 
     raise ValueError(f"Could not parse datetime from: {s!r}")
+
 
 def _digits_to_hour_minute(d: str) -> tuple[int, int]:
     """

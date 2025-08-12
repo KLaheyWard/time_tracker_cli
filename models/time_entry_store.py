@@ -23,3 +23,8 @@ class TimeEntryStore(StoreAbs):
 
     def get_all_entries(self):
         return self.storage.get_all()
+    
+    def get_latest_id(self):
+        entries = self.storage.get_all()
+        return 0 if len(entries) == 0 else max(entries, key=lambda entry: int(entry.id)).id
+        
