@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from models.abstract.entry_abs import EntryAbs
 from utils.time_parser import smart_parse_datetime
-from constants.consts import UNPAID_BREAK_MIN, NUM_HOURS_IN_CYCLE, NUM_DAYS_IN_CYCLE
+from constants.consts import NUM_HOURS_HOLIDAY_DAY, UNPAID_BREAK_MIN, NUM_HOURS_IN_CYCLE, NUM_DAYS_IN_CYCLE
 from enums.day_type import DayTypeEnum
 
 class TimeEntry(EntryAbs):
@@ -12,18 +12,19 @@ class TimeEntry(EntryAbs):
                 self.start_time : datetime = smart_parse_datetime(start_time)
             else: 
                 self.start_time = start_time
-            if end_time:
+            if end_time != None:
+                # used != None here because when end_time arg provided with None value, it evaluates as truthy?
                 self.end_time : datetime = smart_parse_datetime(end_time)
             else: 
-                self.end_time : datetime = self.determine_end_time_from_start(self.start_time)
+                self.end_time : datetime = self.determine_end_time_from_start(self.start_time, day_type)
         except ValueError as ve:
             # TODO: actually do something with this error
             print(ve)
         
         self._id = id
         self.cycle_id = cycle_id
-        self.unpaid_break_min : int = unpaid_break_min
-        self.note : str = note
+        self.unpaid_break_min : int = unpaid_break_min or UNPAID_BREAK_MIN
+        self.note : str = note or ''
         self.day_type = day_type
         
     @property
@@ -35,8 +36,9 @@ class TimeEntry(EntryAbs):
         return ["id", "cycle_id", "start_time", "end_time",
               "unpaid_break_min", "note", "day_type"]
         
-    def determine_end_time_from_start(self, start_datetime):
-        expected_min_worked = (NUM_HOURS_IN_CYCLE / NUM_DAYS_IN_CYCLE) * 60
+    def determine_end_time_from_start(self, start_datetime, day_type = DayTypeEnum):
+        # make sure the right num of time worked depending on the day type
+        expected_min_worked = ((NUM_HOURS_IN_CYCLE / NUM_DAYS_IN_CYCLE) if day_type == DayTypeEnum.REGULAR else NUM_HOURS_HOLIDAY_DAY) * 60 + UNPAID_BREAK_MIN
         return start_datetime + timedelta(minutes=expected_min_worked)
         
     def get_minutes_worked(self):

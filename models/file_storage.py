@@ -1,18 +1,18 @@
-from typing import Type
+from typing import Dict, Type
 from models.abstract.entry_abs import EntryAbs
 from models.abstract.storage_abs import StorageAbs
 from models.file_handler import FileHandler
-from models.model_to_string_factory import ModelToStringFactory
+from models.model_to_string_factory import Formatter, ModelToStringFactory
 from models.string_to_model_factory import StringToModelFactory
 
 
 class FileStorage(StorageAbs):
 
-    def __init__(self, file_handler: FileHandler, model_cls: Type[EntryAbs]):
+    def __init__(self, file_handler: FileHandler, model_cls: Type[EntryAbs], string_formatters: Dict[str, Formatter] | None = None):
         super().__init__()
         self.file_handler = file_handler
         self.model_cls = model_cls
-        self.str_factory = ModelToStringFactory(fieldnames=model_cls.fields())
+        self.str_factory = ModelToStringFactory(fieldnames=model_cls.fields(), formatters=string_formatters)
         self.model_factory = StringToModelFactory(
             model_cls=self.model_cls, fieldnames=self.model_cls.fields())
 

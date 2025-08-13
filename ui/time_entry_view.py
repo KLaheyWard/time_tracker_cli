@@ -1,5 +1,7 @@
+from datetime import timedelta
 from models.time_entry import TimeEntry
 from constants.ui_consts import TE_WIDTH_MAPPING as WIDTH
+from utils.time_calculator import calculate_hours_worked
 
 class TimeEntryView():
     def __init__(self, time_entry : TimeEntry):
@@ -11,6 +13,7 @@ class TimeEntryView():
         self.day_of_week = f"{self.format_day_of_week(time_entry.start_time):>{WIDTH['day_of_week']}}"
         self.date = f"{self.format_date(time_entry.start_time):>{WIDTH['date']}}"
         self.note = f"{time_entry.note or '':<{WIDTH['note']}}"
+        self.hours_worked = f"{calculate_hours_worked(start=time_entry.start_time, end=time_entry.end_time, unpaid_break_min=time_entry.unpaid_break_min):<{WIDTH['hours_worked']}}"
     
     def format_time(self, dt):
         return dt.strftime("%H:%M")
@@ -22,7 +25,7 @@ class TimeEntryView():
         return dt.strftime("%Y-%m-%d")
         
     def __str__(self):
-        return f"{self.id} {self.cycle_id} {self.day_of_week} {self.date} {self.start_time} {self.end_time} {self.unpaid_min} {self.note}"
+        return f"{self.id} {self.cycle_id} {self.day_of_week} {self.date} {self.start_time} {self.end_time} {self.hours_worked} {self.unpaid_min} {self.note}"
     
     @staticmethod
     def headers():
@@ -33,6 +36,7 @@ class TimeEntryView():
         f"{'Date':<{WIDTH['date']}} "
         f"{'Start':<{WIDTH['time']}} "
         f"{'End':<{WIDTH['time']}} "
+        f"{'Hrs':<{WIDTH["hours_worked"]}} "
         f"{'Brk':<{WIDTH['up_break']}} "
         f"{'Note':<{WIDTH['note']}}"
     )

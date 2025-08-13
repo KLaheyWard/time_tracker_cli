@@ -20,8 +20,11 @@ class FileHandler:
 
     def write_line(self, line: str):
         """Write a single line to the file, adding a newline."""
-        self.file.write(f"{line}\n")
-        self.file.flush()  # Ensure data is written immediately
+        self.ensure_newline_at_end()
+        if not line.endswith("\n"):
+            line += "\n"
+            self.file.write(line)
+            self.file.flush()
 
     def rewrite(self, lines: list[str]):
         """
@@ -47,9 +50,22 @@ class FileHandler:
         """Close the file."""
         if not self.file.closed:
             self.file.close()
+                    
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
+        
+    def ensure_newline_at_end(self):
+        """Ensure the file ends with a newline character."""
+        self.file.flush()  # Make sure all writes are saved
+        with open(self.filepath, "rb+") as f:
+            f.seek(0, 2)  # Move to end of file
+            if f.tell() == 0:
+                return  # Empty file, nothing to do
+            f.seek(-1, 2)  # Go to last byte
+            last_char = f.read(1)
+            if last_char != b"\n":
+                f.write(b"\n")
