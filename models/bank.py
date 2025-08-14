@@ -3,10 +3,10 @@ from models.abstract.entry_abs import EntryAbs
 
 
 class Bank(EntryAbs):
-    def __init__(self, id : int, cycle_id: int, banked_time:float):
+    def __init__(self, id : int, cycle_id: int, banked_min:float):
         self._id = id
         self.cycle_id = cycle_id
-        self.banked_time = banked_time
+        self.banked_min = banked_min
         
     @property
     def id(self):

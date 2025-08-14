@@ -11,5 +11,5 @@ class CycleStore(SingleValueStoreAbs):
         return self.storage.get()
     
     def update(self, new_value):
-        self.update(new_value)    
+        self.storage.update(new_value)    
         

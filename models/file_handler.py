@@ -35,6 +35,7 @@ class FileHandler:
         self.file.close()
         with open(self.filepath, "w", encoding=self.encoding) as f:
             for line in lines:
+                line = str(line)
                 if not line.endswith("\n"):
                     line += "\n"
                 f.write(line)

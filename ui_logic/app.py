@@ -13,7 +13,9 @@ from models.file_handler import FileHandler
 from models.file_storage import FileStorage
 from models.time_entry_store import TimeEntryStore
 from models.time_entry import TimeEntry
+from services.time_service import TimeService
 from ui.current_cycle_time_entries import CurrentCycleTimeEntries
+from ui.time_summary_view import TimeSummaryView
 from utils.input_parser import all_but_first
 from utils.time_calculator import calculate_banked
 from utils.time_parser import smart_parse_datetime
@@ -26,37 +28,19 @@ VIEW_CYCLE = 'view'
 class App():
     def __init__(self, app_root):
         self.app_root = app_root
-        # file handlers
-        self.cycle_handler = FileHandler(os.path.join(
-            self.app_root, 'data', 'current_cycle.txt'))
-        self.time_entry_handler = FileHandler(
-            os.path.join(self.app_root, 'data', 'time_entries.csv'))
-        self.bank_handler = FileHandler(os.path.join(self.app_root, 'data', 'time_bank.csv')
-                                        )
-        # storage
-        self.cycle_storage = CycleStorage(self.cycle_handler)
-        self.time_entry_storage = FileStorage(
-            file_handler=self.time_entry_handler, model_cls=TimeEntry, string_formatters={ "start_time": lambda dt: dt.strftime("%Y-%m-%d %H:%M"),
-        "end_time": lambda dt: dt.strftime(DATETIME_FORMAT),})
-        self.bank_storage = FileStorage(file_handler=self.bank_handler, model_cls=Bank)
-        # stores
-        self.cycle_store = CycleStore(self.cycle_storage)
-        self.time_entry_store = TimeEntryStore(self.time_entry_storage)
-        self.bank_store = BankStore(self.bank_storage)
+        # time service
+        self.time_service = TimeService(app_root)
 
     def start(self):
-        print('starting app')
         while True:
             self.show_entries()
             self.get_user_action()
 
-    def get_entries(self, cycle_id: int):
-        return [entry for entry in self.time_entry_store.get_all_entries() if int(entry.cycle_id) == cycle_id]
-
     def show_entries(self):
-        curr_cycle = int(self.cycle_store.get() or 0)
-        curr_entries = self.get_entries(curr_cycle)
+        curr_entries = self.time_service.get_current_time_entries()
+        banked = self.time_service.get_banks()
         print(CurrentCycleTimeEntries(curr_entries))
+        print(TimeSummaryView(bank_list=banked, current_cycle_entries=curr_entries))
 
     def show_user_actions(self):
         print('showing actions')
@@ -85,23 +69,14 @@ class App():
         sys.exit(0)
         
     def process_new_cycle(self):
-        current_cycle = int(self.cycle_store.get())
-        next_cycle = current_cycle + 1
-        self.cycle_store.update(next_cycle)
-        cycle_entries = self.get_entries(current_cycle)
-        time_to_bank = calculate_banked(cycle_entries)
-        next_id = int(self.bank_store.get_latest_id())
-        self.bank_store.add_entry(Bank(id=next_id, cycle_id=current_cycle, banked_time=time_to_bank))
+        self.time_service.change_cycles()
         
     def process_new(self, user_input: list[str]):
-        current_cycle = int(self.cycle_store.get())
-        last_id = self.time_entry_store.get_latest_id()
-        next_id = int(last_id) + 1
         if (len(user_input)== 0):
-            new_entry=TimeEntry(id=next_id, cycle_id=current_cycle, start_time=datetime.now())
+            self.time_service.new_blank_time_entry()
         else:
-            new_entry = self.create_time_entry_from_inputs(id=next_id, cycle_id=current_cycle, action=NEW, input_list=user_input)
-        self.time_entry_store.add_entry(new_entry)
+            new_entry = self.create_time_entry_from_inputs(id=0, cycle_id=0, action=NEW, input_list=user_input)
+            self.time_service.new_time_entry(new_entry)
             
                     
     
@@ -143,12 +118,12 @@ class App():
                         entry_break = val
         
         if action == NEW:
-            now = datetime.now()
+            now = self.time_service.get_now()
             new_start = f'{entry_date or now.strftime(DATE_FORMAT)} {entry_start or  now.strftime(TIME_FORMAT)}' 
             new_end = None if not entry_end else f'{entry_date or now.strftime(DATE_FORMAT)} {entry_end or now.strftime(TIME_FORMAT)}' 
             return TimeEntry(id=id, cycle_id=cycle_id,start_time=new_start, end_time=new_end, unpaid_break_min=entry_break, note=entry_note, day_type=entry_type)
         else:
-            old_entry : TimeEntry= self.time_entry_store.get_entry(id)
+            old_entry : TimeEntry= self.time_service.get_time_entry(id)
             old_date = old_entry.start_time.strftime(DATE_FORMAT)
             old_start = old_entry.start_time.strftime(TIME_FORMAT)
             old_end = old_entry.end_time.strftime(TIME_FORMAT)
@@ -160,10 +135,9 @@ class App():
         
     def process_update(self, user_input: list[str]):
         id_to_upd = int(user_input[0])
-        entry_to_upd : TimeEntry = self.time_entry_store.get_entry(id_to_upd)
-        cycle = entry_to_upd.cycle_id
+        entry_to_upd : TimeEntry = self.time_service.get_time_entry(id_to_upd)
         
         rest_of_inputs = all_but_first(user_input)
         
-        updated_entry = self.create_time_entry_from_inputs(id=id_to_upd, cycle_id=cycle, action=UPD, input_list=rest_of_inputs)
-        self.time_entry_store.update_entry(id_to_upd,updated_entry)
+        updated_entry = self.create_time_entry_from_inputs(id=id_to_upd, cycle_id=entry_to_upd.cycle_id, action=UPD, input_list=rest_of_inputs)
+        self.time_service.update_time_entry(updated_entry)
