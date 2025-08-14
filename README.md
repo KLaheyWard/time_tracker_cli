@@ -1,4 +1,10 @@
-TODOS:
+# Why
+The goal of this app is for myself to track my hours on a compressed schedule. And to practice designing code, and using python. Oh and, for fun!
 
-1. app.py
-   - ui knows too much: need to abstract away logic from ui (like what to do when changing cycles. ui should call a service that will handle that).
+# TODO
+* delete a time entry
+* validation of different/unexpected user inputs
+
+# FEATURE IDEAS
+* option to configure and update cycle hours and num days in cycle for first time use
+* improve CLI command handling. I want to look into how other programs handle parsing user input, especially with variable flags/values to interpret. An idea would be some kind of user input controller where I can configure accepted inputs and input combos and how to handle them.
