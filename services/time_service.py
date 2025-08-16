@@ -51,7 +51,7 @@ class TimeService():
         cycle_entries = self.get_time_entries_for_cycle(current_cycle)
         time_to_bank = calculate_banked(cycle_entries)
         next_id = int(self.bank_store.get_latest_id())
-        self.bank_store.add_entry(Bank(id=next_id, cycle_id=current_cycle, banked_time=time_to_bank))
+        self.bank_store.add_entry(Bank(id=next_id, cycle_id=current_cycle, banked_min=time_to_bank))
     
     def new_blank_time_entry(self):
         current_cycle = self.get_current_cycle()

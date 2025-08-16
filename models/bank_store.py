@@ -12,7 +12,7 @@ class BankStore(StoreAbs):
 
     def add_entry(self, entry: Bank):
         last_id = int(self.get_latest_id())
-        entry.id = last_id + 1
+        entry.set_id(last_id + 1)
         self.storage.add(entry)
 
     def update_entry(self, id, new_entry: Bank):

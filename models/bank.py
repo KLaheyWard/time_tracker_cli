@@ -12,7 +12,10 @@ class Bank(EntryAbs):
     def id(self):
         return self._id
     
+    def set_id(self, id):
+        self._id = id
+    
     @staticmethod
     def fields():
-        return ["id", "cycle_id", "banked_time"]
+        return ["id", "cycle_id", "banked_min"]
         

@@ -93,7 +93,8 @@ class App():
         try:
             id = int(id_str.strip())
         except:
-            print('invalid id')
+            print('\ninvalid id\n')
+            return
             
         try:
             self.time_service.delete_time_entry(id)
