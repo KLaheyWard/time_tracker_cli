@@ -6,7 +6,7 @@ from enums.day_type import DayTypeEnum
 
 class TimeEntry(EntryAbs):
     """The data for a single day's time entry."""
-    def __init__(self, id:int, cycle_id: int, start_time: str | datetime, end_time: str=None, note: str = '', day_type: DayTypeEnum=DayTypeEnum.REGULAR, unpaid_break_min:str=UNPAID_BREAK_MIN):
+    def __init__(self, id:int, cycle_id: int, start_time: str | datetime, end_time: str=None, note: str = '', day_type: DayTypeEnum=DayTypeEnum.REGULAR.value, unpaid_break_min:str=UNPAID_BREAK_MIN):
         try:
             if isinstance(start_time, str):
                 self.start_time : datetime = smart_parse_datetime(start_time)
@@ -30,15 +30,18 @@ class TimeEntry(EntryAbs):
     @property
     def id(self):
         return self._id
+    
+    def set_id(self, new_id):
+        self._id = int(new_id)
         
     @staticmethod
     def fields():
         return ["id", "cycle_id", "start_time", "end_time",
               "unpaid_break_min", "note", "day_type"]
         
-    def determine_end_time_from_start(self, start_datetime, day_type = DayTypeEnum):
+    def determine_end_time_from_start(self, start_datetime, day_type : DayTypeEnum):
         # make sure the right num of time worked depending on the day type
-        expected_min_worked = ((NUM_HOURS_IN_CYCLE / NUM_DAYS_IN_CYCLE) if day_type == DayTypeEnum.REGULAR else NUM_HOURS_HOLIDAY_DAY) * 60 + UNPAID_BREAK_MIN
+        expected_min_worked = ((NUM_HOURS_IN_CYCLE / NUM_DAYS_IN_CYCLE) if day_type.lower() == DayTypeEnum.REGULAR.value else NUM_HOURS_HOLIDAY_DAY) * 60 + UNPAID_BREAK_MIN
         return start_datetime + timedelta(minutes=expected_min_worked)
         
     def get_minutes_worked(self):

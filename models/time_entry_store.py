@@ -19,7 +19,8 @@ class TimeEntryStore(StoreAbs):
         return self.storage.delete(id)
 
     def get_entry(self, id):
-        return self.storage.get(id)
+        result = self.storage.get(id)
+        return result
 
     def get_all_entries(self):
         return self.storage.get_all()

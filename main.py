@@ -1,6 +1,7 @@
 import os
 from ui_logic.app import App
 
-if __name__ == '__main__':
-    app = App(os.path.dirname(os.path.abspath(__file__)))
-    app.start()
+
+app = App(os.path.dirname(os.path.abspath(__file__)))
+app.start()
+    

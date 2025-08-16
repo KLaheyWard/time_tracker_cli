@@ -1,5 +1,7 @@
+from csv import Error
 from datetime import datetime
 import os
+from xml.dom import NotFoundErr
 from constants.ui_consts import DATETIME_FORMAT
 from models.bank import Bank
 from models.bank_store import BankStore
@@ -62,7 +64,7 @@ class TimeService():
     def new_time_entry(self, time_entry: TimeEntry):
         current_cycle = self.get_current_cycle()
         next_id = self.next_time_entry_id()
-        time_entry.id = next_id
+        time_entry.set_id(next_id)
         time_entry.cycle_id = current_cycle
         self.time_entry_store.add_entry(time_entry)
         
@@ -74,10 +76,10 @@ class TimeService():
         return [entry for entry in self.time_entry_store.get_all_entries() if int(entry.cycle_id) == cycle_id]
 
     def get_now(self, as_str = False):
-        now_str = datetime.now().strftime(DATETIME_FORMAT)
+        now = datetime.now()
         if as_str:
-            return now_str
-        return datetime(now_str)
+            return now.strftime(DATETIME_FORMAT)
+        return now
     
     def next_time_entry_id(self):
         last_id = self.time_entry_store.get_latest_id()
@@ -85,3 +87,9 @@ class TimeService():
     
     def update_time_entry(self, updated_entry:TimeEntry):
         self.time_entry_store.update_entry(updated_entry.id, updated_entry)
+        
+    def delete_time_entry(self, entry_id):
+        exists = self.time_entry_store.get_entry(entry_id)
+        if not exists:
+            raise NotFoundErr(f"Could not find entry with id {entry_id}")
+        self.time_entry_store.delete_entry(entry_id)

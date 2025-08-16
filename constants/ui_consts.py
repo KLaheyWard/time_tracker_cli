@@ -17,3 +17,11 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 SQUIGGLE_EMOJI = '\U0001F616'
 ROCKET_EMOJI = '\U0001F680'
 RELIEVED_EMOJI = '\U0001F60C'
+
+# actions
+NEW = 'new'
+UPD = 'upd'
+CYCLE_CHANGE = 'cyc'
+VIEW_CYCLE = 'view'
+DEL = 'del'
+HELP = 'help'

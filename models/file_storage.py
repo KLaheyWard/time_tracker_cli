@@ -47,10 +47,14 @@ class FileStorage(StorageAbs):
         self.file_handler.rewrite(updated_lines)
 
     def get(self, id):
+        if isinstance(id, str):
+            id = int(id)
         all_lines = self.file_handler.read_lines()
         all_entries = [self.model_factory.from_string(
             line) for line in all_lines]
-        return next((entry for entry in all_entries if int(entry.id) == int(id)), None)
+       
+        return next((entry for entry in all_entries if int(entry.id) == id), None)
+  
 
     def get_all(self):
         all_lines = self.file_handler.read_lines()
