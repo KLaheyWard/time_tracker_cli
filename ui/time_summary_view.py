@@ -25,15 +25,16 @@ class TimeSummaryView():
             total_worked_this_cycle += worked_min - expected_min_per_day
            
         total_worked_this_cycle = round(total_worked_this_cycle) 
-        return abs(total_banked + total_worked_this_cycle)
+        return total_banked + total_worked_this_cycle
     
     def display_banked(self, banked_time):
         time_owed_str = f"TIME OWED {SQUIGGLE_EMOJI}"
         even_time_str = f'All hours worked {RELIEVED_EMOJI}'
         extra_time_str = f'Worked extra {ROCKET_EMOJI}'
         # time calcs
-        hours = banked_time // 60
-        minutes = banked_time % 60
+        abs_min = abs(banked_time)
+        hours = abs_min // 60
+        minutes = abs_min % 60
         
         display_str = f'\n{time_owed_str if banked_time < 0 else even_time_str if banked_time == 0 else extra_time_str}\n'
         # all hours worked implies 0 hours and minutes to work.
