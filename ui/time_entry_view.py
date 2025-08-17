@@ -12,6 +12,7 @@ class TimeEntryView():
         self.end_time = f"{self.format_time(time_entry.end_time):>{WIDTH['time']}}"
         self.day_of_week = f"{self.format_day_of_week(time_entry.start_time):>{WIDTH['day_of_week']}}"
         self.date = f"{self.format_date(time_entry.start_time):>{WIDTH['date']}}"
+        self.type = f"{time_entry.day_type.lower():>{WIDTH['day_type']}}"
         self.note = f"{time_entry.note or '':<{WIDTH['note']}}"
         self.hours_worked = f"{round(calculate_min_worked(start=time_entry.start_time, end=time_entry.end_time, unpaid_break_min=time_entry.unpaid_break_min)/60, 2):>{WIDTH['hours_worked']}}"
     
@@ -25,7 +26,7 @@ class TimeEntryView():
         return dt.strftime("%Y-%m-%d")
         
     def __str__(self):
-        return f"{self.id} {self.cycle_id} {self.day_of_week} {self.date} {self.start_time} {self.end_time} {self.unpaid_min} {self.hours_worked} {self.note}"
+        return f"{self.id} {self.cycle_id} {self.day_of_week} {self.date} {self.start_time} {self.end_time} {self.unpaid_min} {self.hours_worked} {self.type} {self.note}"
     
     @staticmethod
     def headers():
@@ -38,5 +39,6 @@ class TimeEntryView():
         f"{'End':<{WIDTH['time']}} "
         f"{'Brk':<{WIDTH['up_break']}} "
         f"{'Hrs':<{WIDTH['hours_worked']}} "
+        f"{'Type':<{WIDTH['day_type']}}"
         f"{'Note':<{WIDTH['note']}}"
     )
