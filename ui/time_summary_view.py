@@ -3,7 +3,7 @@ from constants.consts import NUM_DAYS_IN_CYCLE, NUM_HOURS_IN_CYCLE
 from constants.ui_consts import RELIEVED_EMOJI, ROCKET_EMOJI, SQUIGGLE_EMOJI
 from models.bank import Bank
 from models.time_entry import TimeEntry
-from utils.time_calculator import calculate_hours_worked
+from utils.time_calculator import calculate_min_worked
 
 
 class TimeSummaryView():
@@ -22,7 +22,7 @@ class TimeSummaryView():
         
         expected_min_per_day = (NUM_HOURS_IN_CYCLE * 60) / NUM_DAYS_IN_CYCLE
         for entry in entries:
-            worked_min = round(calculate_hours_worked(entry.start_time, entry.end_time, entry.unpaid_break_min) * 60)
+            worked_min = round(calculate_min_worked(entry.start_time, entry.end_time, entry.unpaid_break_min))
             total_worked_this_cycle += worked_min - expected_min_per_day
            
         total_worked_this_cycle = round(total_worked_this_cycle) 
@@ -41,7 +41,7 @@ class TimeSummaryView():
         # all hours worked implies 0 hours and minutes to work.
         if hours == 0 and minutes == 0:
             return display_str
-        return f'{display_str}{hours} hours and {minutes} min'
+        return f'{display_str}{round(hours)} hours and {round(minutes)} min'
             
         
     def __str__(self):

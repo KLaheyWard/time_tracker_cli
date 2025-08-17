@@ -25,10 +25,11 @@ class BankStore(StoreAbs):
         return self.storage.get(id)
 
     def get_all_entries(self):
-        return self.storage.get_all()
+        retrieved_banks = self.storage.get_all()
+        return [bank for bank in retrieved_banks if bank is not None]
     
     
     def get_latest_id(self):
-        entries = self.storage.get_all()
+        entries = self.get_all_entries()
         return 0 if len(entries) == 0 else max(entries, key=lambda entry: int(entry.id)).id
         

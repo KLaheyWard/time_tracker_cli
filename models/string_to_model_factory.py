@@ -33,7 +33,7 @@ class StringToModelFactory(Generic[T]):
         """Convert a single line string into a model instance."""
         reader = csv.reader(io.StringIO(line), delimiter=self.delimiter)
         row = next(reader, None)
-        if row is not None:
+        if row is not None and len(row) > 0:
             if len(row) != len(self.fieldnames):
                 raise ValueError(
                     f"Column mismatch: expected {len(self.fieldnames)} fields, "

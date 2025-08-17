@@ -45,11 +45,16 @@ class TimeService():
         return self.bank_store.get_all_entries()
     
     def change_cycles(self):
+        # handle cycle transition
         current_cycle = self.get_current_cycle()
         next_cycle = current_cycle + 1
         self.cycle_store.update(next_cycle)
+        # handle banking time
+        ## time entries in the current cycle
         cycle_entries = self.get_time_entries_for_cycle(current_cycle)
+        ## time worked in min in current cycle
         time_to_bank = calculate_banked(cycle_entries)
+        ## save the banked time
         next_id = int(self.bank_store.get_latest_id())
         self.bank_store.add_entry(Bank(id=next_id, cycle_id=current_cycle, banked_min=time_to_bank))
     

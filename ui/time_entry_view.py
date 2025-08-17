@@ -1,7 +1,7 @@
 from datetime import timedelta
 from models.time_entry import TimeEntry
 from constants.ui_consts import TE_WIDTH_MAPPING as WIDTH
-from utils.time_calculator import calculate_hours_worked
+from utils.time_calculator import calculate_min_worked
 
 class TimeEntryView():
     def __init__(self, time_entry : TimeEntry):
@@ -13,7 +13,7 @@ class TimeEntryView():
         self.day_of_week = f"{self.format_day_of_week(time_entry.start_time):>{WIDTH['day_of_week']}}"
         self.date = f"{self.format_date(time_entry.start_time):>{WIDTH['date']}}"
         self.note = f"{time_entry.note or '':<{WIDTH['note']}}"
-        self.hours_worked = f"{calculate_hours_worked(start=time_entry.start_time, end=time_entry.end_time, unpaid_break_min=time_entry.unpaid_break_min):>{WIDTH['hours_worked']}}"
+        self.hours_worked = f"{round(calculate_min_worked(start=time_entry.start_time, end=time_entry.end_time, unpaid_break_min=time_entry.unpaid_break_min)/60, 2):>{WIDTH['hours_worked']}}"
     
     def format_time(self, dt):
         return dt.strftime("%H:%M")

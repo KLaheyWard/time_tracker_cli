@@ -54,7 +54,7 @@ class App():
         print(' -end the end time in the format HH:MM')
         print(' -date in the format YYYY-MM-DD')
         print(' -break the number of unpaid break minutes like MM')
-        print(' -note text with or without "')
+        print(' -note text. Surround with quotation marks for multi-word note.')
         print(' -type with value of \"regular\" or \"holiday\"')
         print('\nExample command with flags')
         print('\n upd 5 -date 2025-12-25 -type holiday -note Christmas day')

@@ -58,5 +58,7 @@ class FileStorage(StorageAbs):
 
     def get_all(self):
         all_lines = self.file_handler.read_lines()
+        all_models = [self.model_factory.from_string(
+            line) for line in all_lines]
         return [self.model_factory.from_string(
             line) for line in all_lines]
