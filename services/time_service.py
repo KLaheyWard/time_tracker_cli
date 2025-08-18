@@ -61,9 +61,7 @@ class TimeService():
     def new_blank_time_entry(self):
         current_cycle = self.get_current_cycle()
         next_id = self.next_time_entry_id()
-        
         new_entry=TimeEntry(id=next_id, cycle_id=current_cycle, start_time=self.get_now(as_str=True))
-        
         self.time_entry_store.add_entry(new_entry)
         
     def new_time_entry(self, time_entry: TimeEntry):

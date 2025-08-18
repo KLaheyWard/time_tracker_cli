@@ -3,6 +3,9 @@ from ui.time_entry_view import TimeEntryView
 
 
 class CurrentCycleTimeEntries():
+    """Handles printing a table of time entries for a cycle.
+    Print this object for the formatted table of time entries.
+    """
     
     def __init__(self, time_entries: list[TimeEntry]):
         self.entries = time_entries

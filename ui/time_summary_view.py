@@ -7,6 +7,12 @@ from utils.time_calculator import calculate_min_worked
 
 
 class TimeSummaryView():
+    """Displays a summary of the banked time for all cycles.
+        If no time is owed and no extra time has been worked, then no time will be displayed, but there will be a message saying that.
+        Oh and an emoji will be displayed and varies depending on whether time is owed, extra time was worked, or time is even (not owed nor extra).
+        
+        Print the instance of this class for the formatted message.
+    """
     def __init__(self, bank_list : list[Bank], current_cycle_entries: list[TimeEntry]):
         self.banks = bank_list
         self.entries = current_cycle_entries

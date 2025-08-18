@@ -1,3 +1,4 @@
+from turtle import update
 from constants.consts import UNPAID_BREAK_MIN
 from constants.ui_consts import DATE_FORMAT, NEW, TIME_FORMAT, UPD
 from enums.day_type import DayTypeEnum
@@ -45,7 +46,7 @@ class InputService():
         if action == NEW:
             return self.create_new_time_entry_from_input(entry_date=entry_date, entry_start=entry_start, entry_end=entry_end, entry_note=entry_note, entry_type=entry_type, entry_break=entry_break)
         else:
-            
+            result = self.create_updated_time_entry_from_input(id=id, entry_date=entry_date, entry_start=entry_start, entry_end=entry_end, entry_note=entry_note, entry_type=entry_type, entry_break=entry_break)
             return self.create_updated_time_entry_from_input(id=id, entry_date=entry_date, entry_start=entry_start, entry_end=entry_end, entry_note=entry_note, entry_type=entry_type, entry_break=entry_break)
         
     def create_new_time_entry_from_input(self, entry_date, entry_start, entry_end, entry_break, entry_note, entry_type):
@@ -68,15 +69,19 @@ class InputService():
     def create_updated_time_entry_from_input(self,id, entry_date, entry_start, entry_end, entry_break, entry_note, entry_type):
         """Retrieves entry to update, updates the values that were provided by the user, and returns the updated TimeEntry."""
         # original entry that we will be updating
-        old_entry : TimeEntry= self.time_service.get_time_entry(id)
-        # handle if entry not found
-        old_date = old_entry.start_time.strftime(DATE_FORMAT)
-        old_start = old_entry.start_time.strftime(TIME_FORMAT)
-        old_end = old_entry.end_time.strftime(TIME_FORMAT)
+        entry : TimeEntry= self.time_service.get_time_entry(id)
         
-        # updated values - want to retain original value if no new value provided
-        upd_date = f'{entry_date if entry_date else old_date}'
-        upd_start = f'{upd_date} {entry_start if entry_start else old_start}'
-        upd_end = f'{upd_date} {entry_end if entry_end else old_end}'
+        # update time and dates
+        entry.update_time_entry(date_input=entry_date, start_input=entry_start, end_input=entry_end)
         
-        return TimeEntry(id=id, cycle_id=old_entry.cycle_id, start_time=upd_start, end_time=upd_end, note=entry_note, unpaid_break_min=entry_break, day_type=entry_type)
+        # update other fields if they're passed in
+        if entry_note:
+            entry.note = entry_note
+            
+        if entry_break:
+            entry.unpaid_break_min = entry_break
+
+        if entry_type:
+            entry.type = entry_type
+            
+        return entry

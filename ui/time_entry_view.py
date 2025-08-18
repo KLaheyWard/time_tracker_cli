@@ -4,6 +4,10 @@ from constants.ui_consts import TE_WIDTH_MAPPING as WIDTH
 from utils.time_calculator import calculate_min_worked
 
 class TimeEntryView():
+    """View class that when printed will display a formatted TimeEntry.
+    The TimeEntry values are displayed as if they're in table cells.
+    Use the headers() static method to print the headers for the table.x
+    """
     def __init__(self, time_entry : TimeEntry):
         self.id = f"{time_entry.id:>{WIDTH['id']}}"
         self.cycle_id = f"{time_entry.cycle_id:>{WIDTH['cycle_id']}}"

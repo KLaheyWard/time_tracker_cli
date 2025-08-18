@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
+from constants.ui_consts import DATE_FORMAT, TIME_FORMAT
 from models.abstract.entry_abs import EntryAbs
 from utils.time_parser import smart_parse_datetime
 from constants.consts import NUM_HOURS_HOLIDAY_DAY, UNPAID_BREAK_MIN, NUM_HOURS_IN_CYCLE, NUM_DAYS_IN_CYCLE
@@ -53,5 +54,78 @@ class TimeEntry(EntryAbs):
         return (f"TimeEntry(id: {self.id}, cycle_id: {self.cycle_id}, start: {start_str}, end: {end_str}, "
                 f"day_type: {self.day_type}, unpaid_break_min: {self.unpaid_break_min}, "
                 f"note: '{self.note}')")
+        
+    def update_time_entry(self, date_input: date | str = None, 
+                      start_input: time | str = None, 
+                      end_input: time | str = None):
+        """
+        Update self.start_time and self.end_time with:
+        - date_input: str "YYYY-MM-DD" or datetime.date
+        - start_input: str "HH:MM" or datetime.time
+        - end_input: str "HH:MM" or datetime.time
+
+        Rules:
+        1. Preserve the original end time if not explicitly changed.
+        2. Ensure end >= start. If end < start after updates, push end to next day.
+        3. Start and end are at most 1 day apart.
+        """
+
+        # Strip seconds
+        current_start = self.start_time.replace(second=0, microsecond=0)
+        current_end = self.end_time.replace(second=0, microsecond=0)
+
+        # --- Convert inputs ---
+        if isinstance(date_input, str):
+            new_date = datetime.strptime(date_input, DATE_FORMAT).date()
+        elif isinstance(date_input, date):
+            new_date = date_input
+        else:
+            new_date = None
+
+        if isinstance(start_input, str):
+            new_start_time = datetime.strptime(start_input, TIME_FORMAT).time()
+        elif isinstance(start_input, time):
+            new_start_time = start_input
+        else:
+            new_start_time = None
+
+        if isinstance(end_input, str):
+            new_end_time = datetime.strptime(end_input, TIME_FORMAT).time()
+        elif isinstance(end_input, time):
+            new_end_time = end_input
+        else:
+            new_end_time = None
+
+        # --- Determine new start ---
+        start_time = new_start_time or current_start.time()
+        start_date = new_date or current_start.date()
+        new_start = datetime.combine(start_date, start_time)
+
+        # --- Determine new end ---
+        if new_end_time is not None:
+            # User explicitly set end time
+            end_time = new_end_time
+        else:
+            # Keep original end time
+            end_time = current_end.time()
+
+        # If user changed date, we may need to adjust end's date to keep end >= start
+        if new_date:
+            end_date = new_date
+            tentative_end = datetime.combine(end_date, end_time)
+            if tentative_end < new_start:
+                # push end to next day
+                tentative_end += timedelta(days=1)
+            new_end = tentative_end
+        else:
+            # Keep end's original date unless start pushes it before start
+            tentative_end = datetime.combine(current_end.date(), end_time)
+            if tentative_end < new_start:
+                tentative_end += timedelta(days=1)
+            new_end = tentative_end
+
+        # --- Update instance ---
+        self.start_time = new_start
+        self.end_time = new_end
     
     

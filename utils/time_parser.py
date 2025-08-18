@@ -109,3 +109,5 @@ def _digits_to_hour_minute(d: str) -> tuple[int, int]:
     else:
         # Fallback: try last two as minutes, rest as hour (e.g., '12345' -> 123:45) if you want.
         raise ValueError("Unrecognized numeric time length.")
+    
+
