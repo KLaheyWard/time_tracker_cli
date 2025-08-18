@@ -12,7 +12,7 @@ class CurrentCycleTimeEntries():
         
     def __str__(self):
         if len(self.entries) <= 0: 
-            return 'There are no time entries!'
+            return '\nThere are no time entries!'
         result = TimeEntryView.headers() + '\n'
         for entry in self.entries:
             result = result + f"{TimeEntryView(entry)}\n"

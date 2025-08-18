@@ -4,6 +4,7 @@ from datetime import datetime
 from constants.consts import UNPAID_BREAK_MIN
 from constants.ui_consts import DATE_FORMAT, TIME_FORMAT
 from enums import day_type
+from ui_logic.validators import validate_day_type
 from utils.flag_parser import FlagParser
 
 
@@ -15,7 +16,7 @@ class TimeEntryInputParser():
         parser.register("date", dtype=self.parse_date, help_text="Date YYYY-MM-DD")
         parser.register("break", dtype=int, default=UNPAID_BREAK_MIN, help_text="Unpaid break in minutes")
         parser.register("note", dtype=str, default='', help_text="Note about the work day")
-        parser.register("type", dtype=str, default=day_type.DayTypeEnum.REGULAR.value, help_text='The Day Type for the work day')
+        parser.register("type", dtype=str, default=day_type.DayTypeEnum.REGULAR.value, help_text='The Day Type for the work day', validator=validate_day_type)
         self.parser = parser
     
     def get(self):

@@ -23,7 +23,8 @@ class TimeEntryStore(StoreAbs):
         return result
 
     def get_all_entries(self):
-        return self.storage.get_all()
+        entries = self.storage.get_all()
+        return [entry for entry in entries if entry is not None]
     
     def get_latest_id(self):
         entries = self.storage.get_all()

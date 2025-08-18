@@ -22,8 +22,7 @@ class FileStorage(StorageAbs):
 
     def update(self, id, new_entry):
         all_lines = self.file_handler.read_lines()
-        all_entries = [self.model_factory.from_string(
-            line) for line in all_lines]
+        all_entries = self.get_all()
         updated_lines = []
 
         for i in range(len(all_entries)):
@@ -36,8 +35,7 @@ class FileStorage(StorageAbs):
 
     def delete(self, id):
         all_lines = self.file_handler.read_lines()
-        all_entries = [self.model_factory.from_string(
-            line) for line in all_lines]
+        all_entries = self.get_all()
         updated_lines = []
 
         for i in range(len(all_entries)):
@@ -49,16 +47,14 @@ class FileStorage(StorageAbs):
     def get(self, id):
         if isinstance(id, str):
             id = int(id)
-        all_lines = self.file_handler.read_lines()
-        all_entries = [self.model_factory.from_string(
-            line) for line in all_lines]
+        all_entries = self.get_all()
        
         return next((entry for entry in all_entries if int(entry.id) == id), None)
   
 
     def get_all(self):
         all_lines = self.file_handler.read_lines()
-        all_models = [self.model_factory.from_string(
-            line) for line in all_lines]
-        return [self.model_factory.from_string(
-            line) for line in all_lines]
+        return [
+            model for line in all_lines 
+            if (model := self.model_factory.from_string(line)) is not None
+        ]

@@ -56,10 +56,10 @@ class FlagParser:
                     try:
                         value = config["dtype"](raw_value)
                     except ValueError:
-                        raise ValueError(f"Invalid value for '{key}', expected {config['dtype'].__name__}")
+                        raise ValueError(f"Invalid value for flag '{key}', expected {config['dtype'].__name__}")
 
                     if config["validator"] and not config["validator"](value):
-                        raise ValueError(f"Validation failed for '{key}' with value {value}")
+                        raise ValueError(f"Validation failed for flag '{key}' with value {value}")
 
                     results[key] = value
                     skip_next = True
@@ -75,3 +75,10 @@ class FlagParser:
                     results[key] = False  # absent boolean flags = False
 
         return results
+    
+    def validator_choices(options):
+        """A helper fn if need to validate an option amongst a list of possible options."""
+        opts = set(options)
+        def _v(v):
+            return (v in opts, f"value {v!r} must be one of {sorted(opts)}")
+        return _v

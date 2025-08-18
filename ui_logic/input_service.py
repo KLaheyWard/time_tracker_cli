@@ -43,10 +43,11 @@ class InputService():
         entry_type = inputs.get("type", DayTypeEnum.REGULAR.value)  # str, default 'regular'
         entry_break = inputs.get("break", UNPAID_BREAK_MIN)  # int, default from constant
         
+        
         if action == NEW:
             return self.create_new_time_entry_from_input(entry_date=entry_date, entry_start=entry_start, entry_end=entry_end, entry_note=entry_note, entry_type=entry_type, entry_break=entry_break)
         else:
-            result = self.create_updated_time_entry_from_input(id=id, entry_date=entry_date, entry_start=entry_start, entry_end=entry_end, entry_note=entry_note, entry_type=entry_type, entry_break=entry_break)
+
             return self.create_updated_time_entry_from_input(id=id, entry_date=entry_date, entry_start=entry_start, entry_end=entry_end, entry_note=entry_note, entry_type=entry_type, entry_break=entry_break)
         
     def create_new_time_entry_from_input(self, entry_date, entry_start, entry_end, entry_break, entry_note, entry_type):
@@ -71,6 +72,8 @@ class InputService():
         # original entry that we will be updating
         entry : TimeEntry= self.time_service.get_time_entry(id)
         
+        if not entry:
+            return
         # update time and dates
         entry.update_time_entry(date_input=entry_date, start_input=entry_start, end_input=entry_end)
         

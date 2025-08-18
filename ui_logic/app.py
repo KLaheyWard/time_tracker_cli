@@ -15,7 +15,7 @@ class App():
         self.input_service = InputService(app_root)
 
     def start(self):
-        print('For all commands, enter: help')
+        log(('\nFor all commands, enter: ',), ('help', 'cyan'))
         while True:
             self.show_entries()
             self.get_user_action()
@@ -27,6 +27,7 @@ class App():
         print(TimeSummaryView(bank_list=banked, current_cycle_entries=curr_entries))
 
     def show_user_actions(self):
+        print('-------------------------------------------------------')
         log(("\nActions","green", "underline", "bold"))
         log(
             ("\nAdd new time entry with all default values:",),
@@ -61,6 +62,7 @@ class App():
         log(("\nExample command with flags","green", "underline", "bold"))
         log(('\nupd 5 -date 2025-12-25 -type holiday -note "Christmas day"', 'yellow'))
         print('\nThis updates time entry with ID of 5 to have a date of 2025-12-25 specifies it\'s a holiday, and adds a note "Christmas day" to the entry.\n')
+        print('-------------------------------------------------------\n')
 
     def get_user_action(self):
         user_input = input(f"{COLOURS['green']}\nAction>{RESET}")
@@ -68,6 +70,7 @@ class App():
     
     def process_input(self, input_str : str):
         action,user_input_str = self.input_service.separate_cmd_from_flags(input_str)
+        action = action.lower()
         
         match action:
             case "upd":
@@ -107,7 +110,13 @@ class App():
         
     def process_new(self, user_input: list[str]):
         """Processes the 'new' command and the following flags."""
-        flags_passed = self.input_service.parse(user_input)
+        try:
+            flags_passed = self.input_service.parse(user_input)
+        except ValueError as e:
+            log(('\nInvalid entry', 'red'))
+            log((f'{e}\n', 'red'))
+            return
+            
         if (len(flags_passed) <= 0):
             self.time_service.new_blank_time_entry()
         else:
@@ -123,6 +132,9 @@ class App():
         input_dict = self.input_service.parse(user_input_flags)
         
         updated_entry = self.input_service.create_time_entry_from_inputs(id=id_to_upd, cycle_id=0, action=UPD, inputs=input_dict)
+        if updated_entry is None:
+            print(f'\nCould not find entry with id {id_to_upd}')
+            return
         self.time_service.update_time_entry(updated_entry)
         
     

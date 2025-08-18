@@ -62,6 +62,7 @@ class TimeService():
         current_cycle = self.get_current_cycle()
         next_id = self.next_time_entry_id()
         new_entry=TimeEntry(id=next_id, cycle_id=current_cycle, start_time=self.get_now(as_str=True))
+
         self.time_entry_store.add_entry(new_entry)
         
     def new_time_entry(self, time_entry: TimeEntry):
@@ -76,7 +77,8 @@ class TimeService():
 
     def get_current_time_entries(self):
         cycle_id = self.get_current_cycle()
-        return [entry for entry in self.time_entry_store.get_all_entries() if int(entry.cycle_id) == cycle_id]
+        all_entries = self.time_entry_store.get_all_entries()
+        return [entry for entry in all_entries if int(entry.cycle_id) == cycle_id]
 
     def get_now(self, as_str = False):
         now = datetime.now()
