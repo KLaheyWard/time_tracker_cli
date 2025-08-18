@@ -3,6 +3,7 @@ from constants.consts import NUM_DAYS_IN_CYCLE, NUM_HOURS_IN_CYCLE
 from constants.ui_consts import RELIEVED_EMOJI, ROCKET_EMOJI, SQUIGGLE_EMOJI
 from models.bank import Bank
 from models.time_entry import TimeEntry
+from utils.colour_logger import COLOURS, RESET
 from utils.time_calculator import calculate_min_worked
 
 
@@ -35,9 +36,9 @@ class TimeSummaryView():
         return total_banked + total_worked_this_cycle
     
     def display_banked(self, banked_min):
-        time_owed_str = f"TIME OWED {SQUIGGLE_EMOJI}"
-        even_time_str = f'All hours worked {RELIEVED_EMOJI}'
-        extra_time_str = f'Worked extra {ROCKET_EMOJI}'
+        time_owed_str = f"{COLOURS['yellow']}TIME OWED {SQUIGGLE_EMOJI}{RESET}"
+        even_time_str = f'{COLOURS['blue']}All hours worked {RELIEVED_EMOJI}{RESET}'
+        extra_time_str = f'{COLOURS['magenta']}Worked extra {ROCKET_EMOJI}{RESET}'
         # time calcs
         abs_min = abs(banked_min)
         hours = abs_min // 60

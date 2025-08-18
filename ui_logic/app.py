@@ -1,28 +1,11 @@
-from datetime import datetime
-from itertools import cycle
-import os
 import sys
 from xml.dom import NotFoundErr
-from constants.consts import UNPAID_BREAK_MIN
-from constants.ui_consts import DATE_FORMAT, DATETIME_FORMAT, NEW, TIME_FORMAT, UPD
-from enums.day_type import DayTypeEnum
-from models.bank import Bank
-from models.bank_store import BankStore
-from models.cycle_storage import CycleStorage
-from models.cycle_store import CycleStore
-from models.file_handler import FileHandler
-from models.file_storage import FileStorage
-from models.time_entry_store import TimeEntryStore
-from models.time_entry import TimeEntry
+from constants.ui_consts import NEW, UPD
 from services.time_service import TimeService
 from ui.current_cycle_time_entries import CurrentCycleTimeEntries
 from ui.time_summary_view import TimeSummaryView
 from ui_logic.input_service import InputService
-from ui_logic.time_entry_parser import TimeEntryInputParser
-from utils.input_parser import all_but_first
-from utils.time_calculator import calculate_banked
-from utils.time_parser import smart_parse_datetime
-
+from utils.colour_logger import COLOURS, RESET, log
 
 class App():
     def __init__(self, app_root):
@@ -44,26 +27,43 @@ class App():
         print(TimeSummaryView(bank_list=banked, current_cycle_entries=curr_entries))
 
     def show_user_actions(self):
-        print('Actions:')
-        print(' Delete a time entry: del <ID>')
-        print(' Add new without flags: new')
-        print(' Add new with custom values: new -<flag> <value>')
-        print(' Update a time entry: upd <entry ID> -<flag> <value>')
-        print('\n Flags:')
-        print(' -start the start time in the format HH:MM')
-        print(' -end the end time in the format HH:MM')
-        print(' -date in the format YYYY-MM-DD')
-        print(' -break the number of unpaid break minutes like MM')
-        print(' -note text. Surround with quotation marks for multi-word note.')
-        print(' -type with value of \"regular\" or \"holiday\"')
-        print('\nExample command with flags')
-        print('\n upd 5 -date 2025-12-25 -type holiday -note Christmas day')
-        print('\n This updates time entry with ID of 5 to have a date of 2025-12-25')
-        print(' specifies it\'s a holiday, and adds a note "Christmas day" to the entry.')
-        print('\n')
+        log(("\nActions","green", "underline", "bold"))
+        log(
+            ("\nAdd new time entry with all default values:",),
+            ("\nnew", "cyan")
+        )
+        log(
+            ("\nAdd new with custom values:",),
+            ("\nnew -", "cyan"),
+            ("<flag> <value>", "magenta")
+        )
+        log(
+            ("\nUpdate a time entry:",),
+            ("\nupd ", "cyan"),
+            ("<entry ID> ", "magenta"),
+            ("-", "cyan"),
+            ("<flag> <value>", "magenta")
+        )
+        log(
+            ("\nDelete a time entry:",),               # no color, style, bg
+            ("\ndel ", "cyan"),               # text="del", color=cyan, style=bold
+            ("<ID>", "magenta", "bold")                        # text="<ID>", color=cyan
+        )
+        
+        log(("\nFlags","green", "underline", "bold"))
+        log(('-start ', "cyan"), ('the start time in the format ',), ('HH', 'magenta'), (':', 'cyan'), ('MM', "magenta"))
+        log(('-end ', 'cyan'), ('the end time in the format ',), ('HH', 'magenta'), (':', 'cyan'), ('MM', "magenta"))
+        log(('-date ', 'cyan'), ('in the format ',), ('YYYY', "magenta"),('-','cyan'),('MM', 'magenta'), ("-", 'cyan'), ('DD', 'magenta'))
+        log(('-break ', 'cyan'), ('the number of unpaid break minutes like ',), ('MM', 'magenta'))
+        log(('-note ', 'cyan'), ('text to add to the notes for a time entry in the format ',), ('"', 'cyan'), ('<content for message>', 'magenta'), ('"', 'cyan'))
+        log(('-type ', 'cyan'), ('options are ',) ,('regular', 'cyan'), (' or ',), ('holiday', 'cyan'))
+        
+        log(("\nExample command with flags","green", "underline", "bold"))
+        log(('\nupd 5 -date 2025-12-25 -type holiday -note "Christmas day"', 'yellow'))
+        print('\nThis updates time entry with ID of 5 to have a date of 2025-12-25 specifies it\'s a holiday, and adds a note "Christmas day" to the entry.\n')
 
     def get_user_action(self):
-        user_input = input("\nAction>")
+        user_input = input(f"{COLOURS['green']}\nAction>{RESET}")
         self.process_input(user_input)
     
     def process_input(self, input_str : str):
